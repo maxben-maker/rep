@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <script>
+    function login() {
+      var password = document.getElementById("password").value;
+      if (password === "12345") {  // change 12345 to your password
+        sessionStorage.setItem("authenticated", "true");
+        window.location.href = "home.html";
+      } else {
+        alert("Wrong password!");
+      }
+    }
+  </script>
+</head>
+<body>
+  <h2>Enter Password</h2>
+  <input type="password" id="password" />
+  <button onclick="login()">Login</button>
+</body>
+</html>

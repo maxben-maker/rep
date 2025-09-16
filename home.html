@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Strategy Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        .income-input-section {
+            max-width: 384px;
+            margin: 0 auto 32px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            width: 20px;
+            height: 20px;
+            color: #9ca3af;
+        }
+
+        .income-input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .income-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .total-income {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .total-income .label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .total-income .amount {
+            font-size: 30px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .categories-grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            margin-bottom: 32px;
+        }
+
+        .category-card {
+            padding: 24px;
+            border-radius: 12px;
+            border: 2px solid;
+            transition: transform 0.2s;
+            cursor: default;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .category-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+        }
+
+        .category-percentage {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .category-name {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .category-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        /* Color variants */
+        .green { color: #059669; background-color: #f0fdf4; border-color: #bbf7d0; }
+        .blue { color: #2563eb; background-color: #eff6ff; border-color: #bfdbfe; }
+        .purple { color: #7c3aed; background-color: #faf5ff; border-color: #ddd6fe; }
+        .orange { color: #ea580c; background-color: #fff7ed; border-color: #fed7aa; }
+        .red { color: #dc2626; background-color: #fef2f2; border-color: #fecaca; }
+        .pink { color: #db2777; background-color: #fdf2f8; border-color: #fbcfe8; }
+
+        .strategy-summary {
+            margin-top: 32px;
+            padding: 24px;
+            background-color: #f9fafb;
+            border-radius: 12px;
+        }
+
+        .strategy-summary h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .summary-item {
+            font-size: 14px;
+        }
+
+        .summary-item .title {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .summary-item .value {
+            color: #6b7280;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 0;
+            color: #9ca3af;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Financial Strategy Calculator</h1>
+            <p>Aggressive allocation strategy for fast growth and lifestyle balance</p>
+        </div>
+
+        <div class="income-input-section">
+            <label for="income" class="input-label">Monthly Income (MAD)</label>
+            <div class="input-container">
+                <i data-lucide="dollar-sign" class="input-icon"></i>
+                <input 
+                    id="income" 
+                    type="number" 
+                    class="income-input"
+                    placeholder="Enter your monthly income"
+                    oninput="calculateAllocations()"
+                />
+            </div>
+        </div>
+
+        <div id="results" style="display: none;">
+            <div class="total-income">
+                <div class="label">Total Monthly Income</div>
+                <div class="amount" id="total-amount">0 MAD</div>
+            </div>
+
+            <div class="categories-grid" id="categories-container">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+
+            <div class="strategy-summary">
+                <h3>Strategy Summary</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="title">High Growth Focus</div>
+                        <div class="value">60% (Investing + Education)</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="title">Lifestyle & Fun</div>
+                        <div class="value">22% (Shopping + Gambling)</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="title">Security & Giving</div>
+                        <div class="value">16% (Emergency + Family)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="empty-state" class="empty-state">
+            Enter your monthly income above to see your allocation strategy
+        </div>
+    </div>
+
+    <script>
+        const categories = [
+            {
+                name: 'Stock Market / Crypto / High-Risk Investing',
+                percentage: 40,
+                icon: 'trending-up',
+                colorClass: 'green'
+            },
+            {
+                name: 'Skills / Education',
+                percentage: 20,
+                icon: 'graduation-cap',
+                colorClass: 'blue'
+            },
+            {
+                name: 'Shopping & Lifestyle',
+                percentage: 12,
+                icon: 'shopping-cart',
+                colorClass: 'purple'
+            },
+            {
+                name: 'Emergency Fund / Backup Cash',
+                percentage: 12,
+                icon: 'shield',
+                colorClass: 'orange'
+            },
+            {
+                name: 'Gambling (Casino, Sports Betting)',
+                percentage: 10,
+                icon: 'dice-1',
+                colorClass: 'red'
+            },
+            {
+                name: 'Family / Charity / Others',
+                percentage: 4,
+                icon: 'heart',
+                colorClass: 'pink'
+            }
+        ];
+
+        function formatMAD(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'decimal',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function calculateAllocations() {
+            const incomeInput = document.getElementById('income');
+            const income = parseFloat(incomeInput.value) || 0;
+            
+            const resultsDiv = document.getElementById('results');
+            const emptyStateDiv = document.getElementById('empty-state');
+            const totalAmountDiv = document.getElementById('total-amount');
+            const categoriesContainer = document.getElementById('categories-container');
+
+            if (income > 0) {
+                resultsDiv.style.display = 'block';
+                emptyStateDiv.style.display = 'none';
+                
+                totalAmountDiv.textContent = `${formatMAD(income)} MAD`;
+                
+                categoriesContainer.innerHTML = '';
+                
+                categories.forEach(category => {
+                    const amount = (income * category.percentage) / 100;
+                    
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = `category-card ${category.colorClass}`;
+                    
+                    categoryDiv.innerHTML = `
+                        <div class="category-header">
+                            <i data-lucide="${category.icon}" class="category-icon"></i>
+                            <div class="category-percentage">${category.percentage}%</div>
+                        </div>
+                        <h3 class="category-name">${category.name}</h3>
+                        <div class="category-amount">${formatMAD(amount)} MAD</div>
+                    `;
+                    
+                    categoriesContainer.appendChild(categoryDiv);
+                });
+                
+                // Re-initialize Lucide icons for newly created elements
+                lucide.createIcons();
+            } else {
+                resultsDiv.style.display = 'none';
+                emptyStateDiv.style.display = 'block';
+            }
+        }
+
+        // Initialize Lucide icons when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
