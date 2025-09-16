@@ -2,22 +2,16 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Login</title>
+  <title>My Website</title>
   <script>
-    function login() {
-      var password = document.getElementById("password").value;
-      if (password === "12345") {  // change 12345 to your password
-        sessionStorage.setItem("authenticated", "true");
-        window.location.href = "home.html";
-      } else {
-        alert("Wrong password!");
-      }
+    // Check if logged in
+    if (sessionStorage.getItem('authenticated') !== 'true') {
+      window.location.href = 'index.html';
     }
   </script>
 </head>
 <body>
-  <h2>Enter Password</h2>
-  <input type="password" id="password" />
-  <button onclick="login()">Login</button>
+  <h1>Welcome to my protected website!</h1>
+  <p>🔥 Paste your real website HTML, CSS, JS here 🔥</p>
 </body>
 </html>
